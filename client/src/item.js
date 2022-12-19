@@ -1,9 +1,24 @@
-import useStyles from './Styles'
 import DeleteIcon from '@mui/icons-material/Delete';
-import { FormControlLabel, Checkbox, Typography, IconButton } from '@material-ui/core';
+import {useState, useEffect} from 'react'
+import { FormControlLabel, Checkbox, Typography, IconButton, Box } from '@material-ui/core';
+import { DDNS } from './config'
+import useStyles from './Styles'
 
 function Item(props){
     const classes = useStyles();
+
+    const [publicIP,setPublicIP] = useState(null);
+
+    useEffect(() => {
+        if (DDNS != null){
+            setPublicIP(DDNS);
+            return;
+        }
+        try{
+            fetch("https://api64.ipify.org/?format=text").then(response => response.text().then(ip => setPublicIP(ip)))
+        }catch(e){}
+      }, []);
+
     const internalPort = props.to;
     const externalPort = props.from;
     const protocol = props.protocol;
@@ -11,7 +26,7 @@ function Item(props){
     const client = props.client;
     const enabled = props.enabled;
     const description = props.description;
-    const text = `${protocol} - ${host}:${externalPort} 🡒 ${client}:${internalPort}`;
+    const text = `(${protocol}): ${host} 🡒 ${(publicIP == null)?externalPort:publicIP+":"+externalPort} 🡒 ${client}:${internalPort}`;
 
     const deleteMapping = (e) => {
         fetch("/removePort",
@@ -47,8 +62,8 @@ function Item(props){
     }
 
     return (
-        <div className={classes.controlGroup}>
-            <div className={classes.toggle}>
+        <Box className={classes.controlGroup}>
+            <Box className={classes.toggle}>
                 <Typography className={classes.description}>{description}</Typography>
                 <FormControlLabel
                     control={
@@ -59,16 +74,16 @@ function Item(props){
                             checked={props.enabled} />
                     }
                     label={text}/>
-            </div>
-            <div className={classes.button}>
+            </Box>
+            <Box className={classes.button}>
                 <IconButton
                     onClick={deleteMapping}
                     aria-label="delete"
                     className={classes.deleteButton}>
                     <DeleteIcon />
                 </IconButton>
-            </div>
-        </div>
+            </Box>
+        </Box>
     )
 }
 

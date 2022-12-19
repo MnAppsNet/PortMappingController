@@ -1,17 +1,16 @@
-import { makeStyles } from '@material-ui/core/styles';
-const useStyles = makeStyles((theme) => ({
+import { makeStyles } from '@mui/styles';
+const useStyles = makeStyles({
     root: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         '& > *': {
-            margin: theme.spacing(1),
+            margin: "1px",
             width: '80vw',
             height: '90vh',
         },
     },
     title: {
-        margin: theme.spacing(2, 0, 2, 0),
         color: 'black',
         fontWeight: 'bold'
     },
@@ -21,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         width: "80vw",
         '& > *': {
-            margin: theme.spacing(1),
+            margin: "1px",
         },
     },
     items: {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         width: '100%',
         '& > *': {
-            margin: theme.spacing(1),
+            margin: "1px",
         },
     },
     toggle: {
@@ -55,15 +54,15 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold'
     },
     description: {
-        margin: theme.spacing(1, 0, 1, 0),
+        margin: "1px",
     },
     deleteButton: {
-        color: 'red',
+        color: '#FF0000',
     },
     divider:{
         borderTop: '3px solid #bbb',
         width:'100%'
     }
-}));
+});
 
 export default useStyles;

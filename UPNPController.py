@@ -1,12 +1,15 @@
 import upnpclient
 import json
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 class CONSTANTS:
+	PORT = 5050
+	FRONTEND_STATIC = 'client/build/static'
+	FRONTEND_BUILD = 'client/build'
+	IGD = 'IGD'
 	class PROTOCOLS:
 		TCP = 'TCP'
 		UDP = 'UDP'
-
 
 class upnpController:
 	def __init__(self):
@@ -14,7 +17,7 @@ class upnpController:
 		devices = upnpclient.discover()
 		self.router = None
 		for device in devices:
-			if 'IGD' in device.friendly_name:
+			if CONSTANTS.IGD in device.friendly_name:
 				self.router = device
 
 	#Enable port mapping rule
@@ -36,7 +39,7 @@ class upnpController:
 				NewInternalClient=client,
 				NewEnabled=enabled,
 				NewPortMappingDescription=description,
-				NewLeaseDuration=10000)
+				NewLeaseDuration=999999)
 			return True
 		except:
 			return False
@@ -72,13 +75,15 @@ class upnpController:
 			i += 1
 		return rules
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=CONSTANTS.FRONTEND_STATIC, template_folder=CONSTANTS.FRONTEND_BUILD)
 upnp = upnpController()
 
+#Returns the frontend client
 @app.route("/")
 def client():
-    pass
+    return render_template('index.html')
 
+#Add a new port mapping rule
 @app.route("/addPort", methods=['POST'])
 def addPort():
     data = request.get_json()
@@ -92,6 +97,7 @@ def addPort():
 				data['host'] )
     return json.dumps({'success': result}), 200, {'ContentType':'application/json'}
 
+#Remove a port mapping rule
 @app.route("/removePort", methods=['POST'])
 def removePort():
     data = request.get_json()
@@ -101,10 +107,11 @@ def removePort():
 				data['host'] )
     return json.dumps({'success': result}), 200, {'ContentType':'application/json'}
 
+#Get all port mapping rules
 @app.route("/getPorts", methods=['GET'])
 def getPorts():
     ports = upnp.getOpenPorts();
     return json.dumps(ports), 200, {'ContentType':'application/json'}
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=CONSTANTS.PORT, threaded=True, host='0.0.0.0')

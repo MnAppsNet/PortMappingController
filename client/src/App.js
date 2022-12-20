@@ -1,3 +1,4 @@
+import * as React from 'react';
 import ControlPanel from './ControlPanel'
 
 function App() {
